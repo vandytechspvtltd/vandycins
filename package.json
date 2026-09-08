@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Vandycin Smart Doctor & Pharmacy Node.js backend for Hostinger",
   "type": "module",
-  "main": "src/server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js"
