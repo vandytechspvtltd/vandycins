@@ -15,25 +15,47 @@ const app = express();
 
 app.disable("x-powered-by");
 
+// ============================================================
+// SECURITY
+// ============================================================
+
 app.use(helmet());
 
+// ============================================================
+// BODY PARSER
+// ============================================================
+
 app.use(express.json({ limit: "1mb" }));
+
+// ============================================================
+// CORS
+// ============================================================
 
 app.use(
   cors({
     origin(origin, cb) {
-      if (
-        !origin ||
-        config.corsOrigins.length === 0 ||
-        config.corsOrigins.includes(origin)
-      ) {
+      // Android / server-to-server / non-browser requests
+      if (!origin) {
         return cb(null, true);
       }
 
-      cb(new Error("CORS origin not allowed"));
+      // If no CORS origins configured, allow all
+      if (config.corsOrigins.length === 0) {
+        return cb(null, true);
+      }
+
+      if (config.corsOrigins.includes(origin)) {
+        return cb(null, true);
+      }
+
+      return cb(new Error("CORS origin not allowed"));
     },
   })
 );
+
+// ============================================================
+// RATE LIMIT
+// ============================================================
 
 app.use(
   rateLimit({
@@ -44,30 +66,61 @@ app.use(
   })
 );
 
-// Health
-app.get("/health", (req, res) =>
-  res.json({
+// ============================================================
+// HEALTH CHECK
+// ============================================================
+
+// Main health endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
     success: true,
     service: "vandycin-backend",
     status: "ok",
     timestamp: new Date().toISOString(),
-  })
-);
+  });
+});
 
-// Swagger
+// API health endpoint
+// Useful for Android / API testing
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: "vandycin-backend",
+    status: "ok",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ============================================================
+// SWAGGER
+// ============================================================
+
 app.use(
   "/api-docs",
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec)
 );
 
-// API
-app.use("/api/v1", optionalApiKey, api);
+// ============================================================
+// API V1
+// ============================================================
 
+app.use(
+  "/api/v1",
+  optionalApiKey,
+  api
+);
+
+// ============================================================
 // 404 — ALWAYS LAST
+// ============================================================
+
 app.use(notFound);
 
-// Error handler — LAST
+// ============================================================
+// ERROR HANDLER — ALWAYS LAST
+// ============================================================
+
 app.use(errorHandler);
 
 export default app;
