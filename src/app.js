@@ -67,6 +67,22 @@ app.use(
 );
 
 // ============================================================
+// ROOT
+// ============================================================
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: "vandycin-backend",
+    status: "online",
+    message: "VandyCins API is running",
+    health: "/health",
+    api: "/api/v1",
+    docs: "/api-docs",
+  });
+});
+
+// ============================================================
 // HEALTH CHECK
 // ============================================================
 
@@ -81,13 +97,26 @@ app.get("/health", (req, res) => {
 });
 
 // API health endpoint
-// Useful for Android / API testing
 app.get("/api/v1/health", (req, res) => {
   res.status(200).json({
     success: true,
     service: "vandycin-backend",
     status: "ok",
     timestamp: new Date().toISOString(),
+  });
+});
+
+// ============================================================
+// API V1 ROOT
+// ============================================================
+
+app.get("/api/v1", (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: "vandycin-backend",
+    version: "v1",
+    status: "online",
+    message: "VandyCins API v1 is running",
   });
 });
 
