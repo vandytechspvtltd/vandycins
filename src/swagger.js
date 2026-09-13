@@ -14,6 +14,10 @@ const options = {
 
     servers: [
       {
+        url: "https://vandycinsapi.vandymondglobal.in",
+        description: "Production Server",
+      },
+      {
         url: "http://localhost:3000",
         description: "Local Development Server",
       },
@@ -25,6 +29,8 @@ const options = {
           type: "http",
           scheme: "bearer",
           bearerFormat: "JWT",
+          description:
+            "Enter JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIs...",
         },
 
         apiKeyAuth: {
